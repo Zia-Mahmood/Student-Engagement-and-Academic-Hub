@@ -1,11 +1,19 @@
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, auto: true },
+  //_id: { type: mongoose.Schema.Types.ObjectId, auto: true },
   name: { type: String, required: true },
   role: { type: String, enum: ['admin', 'user'], required: true },
   email: { type: String, required: true, unique: true },
   passwordHash: { type: String, required: true },
+  position: { type: String, enum:['admin','coordinator','user','member'],required: true },
+  memberships: [{
+    role: { type: String, required: true },
+    startDate: { type: Date, required: true },
+    endDate: { type: Date, required: true },
+    club: { type: mongoose.Schema.Types.ObjectId, ref: 'Club', required: true },
+  }],
+  batch: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
   lastLogin: { type: Date },
 });
