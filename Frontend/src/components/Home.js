@@ -1,63 +1,105 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import '../styles/Home.css'
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import "../styles/Dashboard.css";
 
-const Home = ({ onLogout }) => {
-    const [todos, setTodos] = useState([]);
-    const navigate = useNavigate();
+const sections = [
+  {
+    id: "events",
+    title: "Events & Clubs",
+    items: [
+      { label: "Register to a Club", path: "/clubs/register" },
+      { label: "Volunteer for Events", path: "/events/volunteer" },
+      { label: "Look for Events", path: "/events" },
+    ],
+  },
+  {
+    id: "academics",
+    title: "Academic Resources",
+    items: [
+      { label: "Faculty Reviews", path: "/faculty-reviews" },
+      { label: "Course Listing", path: "/courses" },
+      { label: "Course Reviews", path: "/course-reviews" },
+      { label: "Previous Papers", path: "/previous-papers" },
+    ],
+  },
+  {
+    id: "research",
+    title: "Research",
+    items: [
+      { label: "Faculty Profiles", path: "/faculty-profiles" },
+      { label: "How to Approach Faculty", path: "/approach-faculty" },
+      { label: "Current Projects", path: "/projects" },
+    ],
+  },
+];
 
-    const fetchTodos = async () => {
-        const response = await fetch('http://localhost:5001/api/isAuth', {
-            method: 'GET',
-            credentials: 'include',
-        });
+const Dashboard = () => {
+  const navigate = useNavigate();
+  const [user, setUser] = useState("");
+  const [openSection, setOpenSection] = useState(null);
 
-        if (response.ok) {
-            const userSession = await response.json();
-            const todoResponse = await fetch(`http://localhost:5001/api/getTodo`, {
-                method: 'GET',
-                credentials: 'include',
-            });
+  useEffect(() => {
+    fetch("http://localhost:5001/api/isAuth", {
+      method: "GET",
+      credentials: "include",
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.name) setUser(data.name);
+      })
+      .catch((err) => console.error("Auth check failed", err));
+  }, []);
 
-            if (todoResponse.ok) {
-                const data = await todoResponse.json();
-                setTodos(data.data || []);
-            } else {
-                const errorData = await todoResponse.text(); // Get the raw text to see the error
-                console.error('Error fetching todos:', errorData);
-            }
-        } else {
-            const errorData = await response.text(); // Get the raw text to see the error
-            console.error('User is not authenticated:', errorData);
-        }
-    };
+  const handleNavigation = (path) => {
+    navigate(path);
+  };
 
-    useEffect(() => {
-        fetchTodos();
-    }, []);
+  const toggleSection = (section) => {
+    setOpenSection(openSection === section ? null : section);
+  };
 
-    const handleCreateTodo = () => {
-        navigate('/create-todo'); // Redirect to Create Todo Page
-    };
+  return (
+    <div className="dashboard-container">
+      <h1>Student Engagement Hub</h1>
+      <h3>Welcome Back, {user}</h3>
 
-    return (
-        <div className="home-container">
-            <h2>My To-Do List</h2>
-            <button className="logout-button" onClick={onLogout}>Logout</button>
-            <ul>
-                {todos.length > 0 ? (
-                    todos.map((todo) => (
-                        <li key={todo._id}>
-                            <strong>{todo.title}</strong>: {todo.description} (Due: {new Date(todo.dueDate).toLocaleDateString()})
-                        </li>
-                    ))
-                ) : (
-                    <p>No tasks available.</p>
-                )}
-            </ul>
-            <button onClick={handleCreateTodo}>Create New To-Do</button>
+      {/* AI Search Bar */}
+      <div className="ai-search-bar">
+        <input type="text" placeholder="Ask anything..." />
+        <button>Search</button>
+      </div>
+
+      {/* Events Calendar Displayed Directly */}
+      <div className="calendar-placeholder">
+        <h2>Events Calendar</h2>
+        <p>[Calendar Component Placeholder]</p>
+      </div>
+
+      {/* Dynamic Sections */}
+      {sections.map((section) => (
+        <div className="dashboard-section" key={section.id}>
+          <h2 onClick={() => toggleSection(section.id)}>{section.title}</h2>
+          <AnimatePresence>
+            {openSection === section.id && (
+              <motion.ul
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                {section.items.map((item, idx) => (
+                  <li key={idx} onClick={() => handleNavigation(item.path)}>
+                    {item.label}
+                  </li>
+                ))}
+              </motion.ul>
+            )}
+          </AnimatePresence>
         </div>
-    );
+      ))}
+    </div>
+  );
 };
 
-export default Home;
+export default Dashboard;
