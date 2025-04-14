@@ -1,11 +1,10 @@
-import './App.css';
-import Register from './components/Register';
-import Login from './components/Login';
-import Home from './components/Home';
-import CreateTodo from './components/CreateTodo';
-import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
-import React, { useState, useEffect } from 'react';
-
+import "./App.css";
+import Register from "./components/Register";
+import Login from "./components/Login";
+import Home from "./components/Home";
+import Dashboard from "./components/Dashboard";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -13,9 +12,9 @@ function App() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await fetch('http://localhost:5001/api/isAuth', {
-          method: 'GET',
-          credentials: 'include', // Include cookies for session management
+        const response = await fetch("http://localhost:5001/api/isAuth", {
+          method: "GET",
+          credentials: "include", // Include cookies for session management
         });
 
         if (response.ok) {
@@ -39,28 +38,49 @@ function App() {
   };
 
   const handleLogout = () => {
-    fetch('http://localhost:5001/api/logout', {
-      method: 'GET',
-      credentials: 'include',
+    fetch("http://localhost:5001/api/logout", {
+      method: "GET",
+      credentials: "include",
     })
       .then(() => {
         setIsAuthenticated(false);
         console.log("authentication is false");
       })
-      .catch((err) => console.log('Logout failed:', err));
+      .catch((err) => console.log("Logout failed:", err));
   };
 
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={isAuthenticated ? <Navigate to="/home" /> : <Login onLogin={handleLogin} />} />
+        <Route
+          path="/"
+          element={
+            isAuthenticated ? (
+              <Navigate to="/home" />
+            ) : (
+              <Login onLogin={handleLogin} />
+            )
+          }
+        />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login onLogin={handleLogin} />} />
-        <Route path="/home" element={isAuthenticated ? <Home onLogout={handleLogout} /> : <Navigate to="/login" />} />
-        <Route path="/create-todo" element={isAuthenticated ? <CreateTodo /> : <Login />} />
+        <Route
+          path="/home"
+          element={
+            isAuthenticated ? (
+              <Home onLogout={handleLogout} />
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={isAuthenticated ? <Dashboard /> : <Login />}
+        />
       </Routes>
     </BrowserRouter>
-  )
+  );
 }
 
 export default App;
