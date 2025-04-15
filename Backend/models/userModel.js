@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema({
   memberships: [{
     role: { type: String, required: true },
     startDate: { type: Date, required: true },
-    endDate: { type: Date, required: true },
+    endDate: { type: Date},
     club: { type: mongoose.Schema.Types.ObjectId, ref: 'Club', required: true },
   }],
   batch: { type: String, required: true },

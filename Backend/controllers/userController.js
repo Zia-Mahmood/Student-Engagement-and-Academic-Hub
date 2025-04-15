@@ -1,6 +1,7 @@
 const { isNull } = require("util");
 const Users = require("../models/userModel");
 const bcrypt = require("bcryptjs");
+const mongoose = require("mongoose");
 
 const addUser = async (req, res) => {
   const { username, password } = req.body;
@@ -31,14 +32,15 @@ const addUser = async (req, res) => {
 
 const login = async (req, res) => {
   console.log(req.body);
-  const { username, password } = req.body;
-  //   let lastLogin = new Date();
-  //   console.log(lastLogin);
-  if (!username || !password) {
+  const { email, password } = req.body;
+  let lastLogin = new Date();
+  if (!email || !password) {
     res.status(400).json({ msg: "Something missing" });
   }
+  console.log(lastLogin,Users);
+
   try {
-    const user = await Users.findOne({ name: username }); // finding user in db
+    const user = await Users.findOne({ email: email }); // finding user in db
     if (!user) {
       return res.status(400).json({ msg: "User not found" });
     }
@@ -48,16 +50,17 @@ const login = async (req, res) => {
     const matchPassword = await bcrypt.compare(password, user.passwordHash);
     console.log(matchPassword);
 
+
     if (matchPassword) {
       // Update lastLogin
-      //   await Users.updateOne({ username }, { lastLogin });
-      //   console.log("Last login time updated");
+      await Users.updateOne({ email }, { lastLogin });
+      console.log("Last login time updated");
 
       // Creating user session to keep user logged in also on refresh
       const userSession = {
+        email: user.email,
+        position: user.position,
         name: user.name,
-        // role: user.role,
-        // email: user.email,
       };
       req.session.user = userSession; // attach user session to session object from express-session
       req.session.save();

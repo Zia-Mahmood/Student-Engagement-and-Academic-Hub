@@ -1,29 +1,47 @@
-const dotenv = require('dotenv')
-const express = require('express')
-const session = require('express-session')
-const mongoose = require('mongoose')
-const MongoDBStore = require('connect-mongodb-session')(session)
-const cors = require('cors')
-const bodyParser = require('body-parser')
+const dotenv = require('dotenv');
+const express = require('express');
+const session = require('express-session');
+const mongoose = require('mongoose');
+const MongoDBStore = require('connect-mongodb-session')(session);
+const cors = require('cors');
+const bodyParser = require('body-parser');
 
-const userRoutes = require('./routes/userRoutes')
+const userRoutes = require('./routes/userRoutes');
 
-const app = express()
-const port = process.env.PORT || 5001
+const app = express();
+
 dotenv.config({ path: './config.env' });
 
-mongoose.connect(process.env.DATABASE_CONNECTION_STRING).then(() => console.log("Connection to MongoDB successfull...")).catch((err) => console.log("Unable to connect to MongoDB...", err));
-
+const port = process.env.PORT || 6001
+const uri = process.env.DATABASE_CONNECTION_STRING;
 
 const mongoDBstore = new MongoDBStore({
-    uri: process.env.DATABASE_CONNECTION_STRING,
-    collection: 'localSessions',
+    uri,
+    collection: "localSessions",
 })
 
 // MIDDLEWARES
 app.use(cors({ credentials: true, origin: true }))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
+
+async function connectToMongoDB() {
+    try{
+        await mongoose.connect(uri);
+
+        console.log("Connected to MongoDB!");
+
+    await mongoose.connection.db.admin().ping();
+    console.log(
+      "Pinged your deployment. You successfully connected to MongoDB!"
+    );
+
+  } catch (error) {
+    console.error("Failed to connect to MongoDB:", error);
+  }
+}
+
+connectToMongoDB();
 
 // SESSIONS HANDLER
 const MAX_AGE = 1000 * 60 * 30; // 30 minutes
