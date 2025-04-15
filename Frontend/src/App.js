@@ -1,10 +1,19 @@
 import "./App.css";
+import "tailwindcss";
 import Register from "./components/Register";
 import Login from "./components/Login";
 import Home from "./components/Home";
+import Layout  from "./components/Layout";
+import Clubs from "./components/Clubs";
+import StudentBody from "./components/StudentBody";
+import Events from "./components/Events";
+import Calendar from "./components/Calendar";
+import JoinClub from "./components/JoinClub";
 import Dashboard from "./components/Dashboard";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
+
+const url = "http://localhost:3000/api";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -12,9 +21,11 @@ function App() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await fetch("http://localhost:5001/api/isAuth", {
+        console.log(url)
+        const response = await fetch(url + "/isAuth", {
           method: "GET",
-          credentials: "include", // Include cookies for session management
+          withcredentials: "include", // Include cookies for session management
+          credentials: 'include',
         });
 
         if (response.ok) {
@@ -38,7 +49,7 @@ function App() {
   };
 
   const handleLogout = () => {
-    fetch("http://localhost:5001/api/logout", {
+    fetch(url + "/logout", {
       method: "GET",
       credentials: "include",
     })
@@ -52,32 +63,20 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route
-          path="/"
-          element={
-            isAuthenticated ? (
-              <Navigate to="/home" />
-            ) : (
-              <Login onLogin={handleLogin} />
-            )
-          }
-        />
-        <Route path="/register" element={<Register />} />
+        <Route path="/" element={<Layout />}>
+          <Route index element={isAuthenticated?<Home />: <Navigate to="/login"/>}/>
+          <Route path="/register" element={<Register />} />
+          <Route
+            path="/dashboard"
+            element={isAuthenticated ? <Dashboard /> : <Navigate to="/login"/>}
+          />
+          <Route path="/clubs" element={isAuthenticated ? <Clubs /> : <Navigate to="/login"/>} />
+          <Route path="/student-bodies" element={isAuthenticated ? <StudentBody /> : <Navigate to="/login"/>} />
+          <Route path="/events" element={isAuthenticated ? <Events /> : <Navigate to="/login"/>} />
+          <Route path="/calendar" element={isAuthenticated ? <Calendar /> : <Navigate to="/login"/>} />
+          <Route path="/join-club" element={isAuthenticated ? <JoinClub /> : <Navigate to="/login"/>} />
+        </Route>
         <Route path="/login" element={<Login onLogin={handleLogin} />} />
-        <Route
-          path="/home"
-          element={
-            isAuthenticated ? (
-              <Home onLogout={handleLogout} />
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
-        />
-        <Route
-          path="/dashboard"
-          element={isAuthenticated ? <Dashboard /> : <Login />}
-        />
       </Routes>
     </BrowserRouter>
   );
