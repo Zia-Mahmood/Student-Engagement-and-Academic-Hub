@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import "../styles/Dashboard.css";
 
+const url = "http://localhost:3000/api";
+
 const sections = [
   {
     id: "events",
@@ -34,13 +36,12 @@ const sections = [
   },
 ];
 
-const Dashboard = () => {
+const Home = ({}) => {
   const navigate = useNavigate();
   const [user, setUser] = useState("");
   const [openSection, setOpenSection] = useState(null);
-
   useEffect(() => {
-    fetch("http://localhost:5001/api/isAuth", {
+    fetch(url + "/isAuth", {
       method: "GET",
       credentials: "include",
     })
@@ -102,4 +103,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default Home;

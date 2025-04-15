@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/Register.css'
 
+const url = "http://localhost:3000/api";
+
 const Register = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -17,7 +19,7 @@ const Register = () => {
             return;
         }
 
-        const response = await fetch('http://localhost:5001/api/register', {
+        const response = await fetch(url+'/register', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

@@ -3,12 +3,14 @@ import { useNavigate } from "react-router-dom";
 import "../styles/Dashboard.css";
 import { useEffect, useState } from "react";
 
+const url = "http://localhost:3000/api";
+
 const Dashboard = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState("");
 
   useEffect(() => {
-    fetch("http://localhost:5001/api/isAuth", {
+    fetch(url+"/isAuth", {
       method: "GET",
       credentials: "include",
     })
