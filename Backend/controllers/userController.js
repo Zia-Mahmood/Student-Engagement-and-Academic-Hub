@@ -1,5 +1,6 @@
 const { isNull } = require("util");
 const Users = require("../models/userModel");
+const Club = require("../models/clubModel");
 const bcrypt = require("bcryptjs");
 const mongoose = require("mongoose");
 
@@ -78,7 +79,6 @@ const login = async (req, res) => {
 };
 
 const logout = async (req, res) => {
-  console.log("present");
   if (req.session.user) {
     req.session.destroy((err) => {
       if (err) return res.status(500).send("Unable to Logout!");
@@ -98,9 +98,55 @@ const isAuth = async (req, res) => {
   }
 };
 
+const getClubMembers = async (req,res) => {
+  const { clubId } = req.params;   // this is the `cid` field on Club
+
+  try {
+    // 1. Find the Club by its cid
+    const club = await Club.findOne({ cid: clubId }).select('_id cid name');
+    if (!club) {
+      return res.status(404).json({ message: `Club '${clubId}' not found` });
+    }
+
+    // 2. Find users who have at least one membership for this club
+    //    We query on memberships.club === club._id
+    const users = await Users.find({ 'memberships.club': club._id })
+      .select('name email memberships')   // pick only fields we need
+      .lean();                            // get plain JS objects
+    console.log(users.length);
+    // 3. For each user, filter their memberships down to this club
+    const result = users.map(user => {
+      // Filter memberships for this club
+      const clubMemberships = user.memberships
+        .filter(m => m.club.toString() === club._id.toString())
+        .map(m => ({
+          role:      m.role,
+          startDate: m.startDate,
+          endDate:   m.endDate || null,
+        }));
+
+      return {
+        userId:       user._id,
+        name:         user.name,
+        email:        user.email,
+        memberships:  clubMemberships,
+      };
+    });
+
+    return res.status(200).json({
+      message: 'Club members fetched successfully',
+      members: result,
+    });
+  } catch (err) {
+    console.error('Error in getClubMembers:', err);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
 module.exports = {
   addUser,
   login,
   logout,
   isAuth,
+  getClubMembers,
 };

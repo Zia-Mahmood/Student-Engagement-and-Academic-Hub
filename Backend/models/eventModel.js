@@ -6,10 +6,10 @@ const eventSchema = new mongoose.Schema({
     code: { type: String, required: true },
     clubid: { type: String, required: true },
     collabclubs: [{ type: String }],
-    datetimeperiod: [{
+    datetimeperiod: {
         0: { type: Date, required: true },
         1: { type: Date, required: true },
-    }],
+    },
     status: { type: mongoose.Schema.Types.Mixed,required: true},
     location: [{ type: String }],
     for:[{ type: String }],

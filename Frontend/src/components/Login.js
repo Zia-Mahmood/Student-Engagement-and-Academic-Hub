@@ -80,8 +80,8 @@ function Login({ onLogin }) {
 
     return (
         <Box sx={{display:'flex', flexDirection:'column',mt:'5%'}}>
-            <Container maxWidth="sm" sx={{ alignSelf: 'center', flexDirection: 'column',width:'40%' }}>
-                <Box component="img" sx={{width:'100%',height:'auto',mb:8}} src="/iiit-logo-white.png" alt="IIITH Logo" />
+            <Container maxWidth="sm" sx={{ alignSelf: 'center', flexDirection: 'column',width:'40%',alignItems:"center" }}>
+                <Box component="img" sx={{width:'80%',height:'80%',mb:4,ml:6}} src="/iiit-logo-white.png" alt="IIITH Logo" />
                 <Typography variant="h5" sx={{ mb: 3, color: '#FFFFFF', fontWeight: 600 ,textAlign:'center'}}>
                     Enter Credentials
                 </Typography>

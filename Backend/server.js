@@ -7,6 +7,11 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 
 const userRoutes = require('./routes/userRoutes');
+const clubRoutes = require("./routes/clubRoutes");
+const eventRoutes = require("./routes/eventRoutes");
+
+const { refreshSession, requireAuth, requireRole } = require('./middlewares/userMiddleware');
+const { clubExists, requireMembership } = require('./middlewares/clubMiddleware');
 
 const app = express();
 
@@ -24,6 +29,7 @@ const mongoDBstore = new MongoDBStore({
 app.use(cors({ credentials: true, origin: true }))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
+app.use(refreshSession);
 
 async function connectToMongoDB() {
     try{
@@ -61,6 +67,9 @@ app.use(
 );
 
 app.use('/api', userRoutes)
+app.use('/api', clubRoutes)
+app.use('/api', eventRoutes)
+app.use('/api/images',express.static('images'))
 
 app.listen(port, () => {
     console.log(`Server listening on port ${port}`)

@@ -5,6 +5,7 @@ import Login from "./components/Login";
 import Home from "./components/Home";
 import Layout  from "./components/Layout";
 import Clubs from "./components/Clubs";
+import ClubDetail from "./components/ClubDetail";
 import StudentBody from "./components/StudentBody";
 import Events from "./components/Events";
 import Calendar from "./components/Calendar";
@@ -31,7 +32,7 @@ function App() {
         if (response.ok) {
           const userSession = await response.json();
           setIsAuthenticated(true); // Set authenticated to true if successful
-          console.log("Authenticated:", userSession);
+          console.log("Authenticated:", userSession,isAuthenticated);
         } else {
           console.log("Authentication check failed:", response.status);
           setIsAuthenticated(false); // Set authenticated to false if failed
@@ -70,6 +71,7 @@ function App() {
             path="/dashboard"
             element={isAuthenticated ? <Dashboard /> : <Navigate to="/login"/>}
           />
+          <Route path="/clubs/:clubId" element={isAuthenticated ? <ClubDetail /> : <Navigate to="/login"/>} />
           <Route path="/clubs" element={isAuthenticated ? <Clubs /> : <Navigate to="/login"/>} />
           <Route path="/student-bodies" element={isAuthenticated ? <StudentBody /> : <Navigate to="/login"/>} />
           <Route path="/events" element={isAuthenticated ? <Events /> : <Navigate to="/login"/>} />

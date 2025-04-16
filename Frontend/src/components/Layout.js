@@ -58,6 +58,7 @@ const Layout = ({ onLogout }) => {
             display: "flex",
             height: "100vh",
             backgroundColor: "rgb(34, 34, 34)",
+            overflow:"auto"
         }}>
             {/* Left Drawer */}
             <Drawer
