@@ -79,6 +79,12 @@ function App() {
             element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />}
           />
           <Route
+            path="/clubs/:clubId"
+            element={
+              isAuthenticated ? <ClubDetail /> : <Navigate to="/login" />
+            }
+          />
+          <Route
             path="/clubs"
             element={isAuthenticated ? <Clubs /> : <Navigate to="/login" />}
           />
