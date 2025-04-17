@@ -1,3 +1,11 @@
-## Running AI microservice
-cd ai_subsystem && pip install -r requirements.txt
-uvicorn ai_service:app --host 0.0.0.0 --port 8000
+# AI Subsystem
+
+This folder implements the AI‑powered search & overview microservice.
+
+## Setup
+
+```bash
+cd ai_subsystem
+python3 -m venv se-project3
+source venv/bin/activate
+pip install -r requirements.txt
