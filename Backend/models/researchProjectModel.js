@@ -7,7 +7,6 @@ const researchProjectSchema = new mongoose.Schema({
     faculty: { type: mongoose.Schema.Types.ObjectId, ref: 'Faculty', required: true },
     collaborators: [{ type: String }], 
     startDate: { type: Date },
-    endDate: { type: Date },
 });
 
 module.exports = mongoose.model('ResearchProject', researchProjectSchema);

@@ -15,6 +15,7 @@ import Courses from "./components/Courses";
 import Faculty from "./components/Faculty";
 import CoursesId from "./components/CoursesId";
 import FacultyId from "./components/FacultyId";
+import Research from "./components/Research";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 
@@ -121,6 +122,10 @@ function App() {
           <Route
             path="/faculty/:id"
             element={isAuthenticated ? <FacultyId /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/projects"
+            element={isAuthenticated ? <Research /> : <Navigate to="/login" />}
           />
         </Route>
         <Route path="/login" element={<Login onLogin={handleLogin} />} />
