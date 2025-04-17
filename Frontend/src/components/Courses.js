@@ -125,6 +125,7 @@ const Courses = () => {
       setSelectedFaculty1("");
       setSelectedFaculty2("");
       setResources("");
+      window.location.reload();
     } catch (err) {
       alert("Error adding course: " + err.message);
     }
