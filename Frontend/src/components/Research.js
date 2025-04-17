@@ -15,7 +15,6 @@ import {
   import React, { useEffect, useState } from "react";
   import { useNavigate } from "react-router-dom";
   import DeleteIcon from "@mui/icons-material/Delete";
-
   
   const url = "http://localhost:3000/api";
   
@@ -23,16 +22,16 @@ import {
     const [userPosition, setUserPosition] = useState("");
     const [projectsList, setProjectsList] = useState([]);
     const [facultyList, setFacultyList] = useState([]);
+    const [subscribedEmails, setSubscribedEmails] = useState([]); // To store subscribed emails
     const [error, setError] = useState("");
     const navigate = useNavigate();
     const [openModal, setOpenModal] = useState(false);
     const [newProject, setNewProject] = useState({
       title: "",
       description: "",
-      status: "ongoing", // or "completed"
+      status: "ongoing",
       collaborators: "",
       startDate: "",
-    //   endDate: "",
     });
   
     useEffect(() => {
@@ -63,7 +62,7 @@ import {
           setError("Failed to load projects list.");
         }
       };
-
+  
       const fetchFaculty = async () => {
         try {
           const response = await fetch(url + "/faculty/list", {
@@ -71,7 +70,6 @@ import {
             headers: { "Content-Type": "application/json" },
           });
           const data = await response.json();
-          
           const filteredFaculty = data.filter(faculty => faculty.isResearcher);
           setFacultyList(filteredFaculty);
         } catch (err) {
@@ -119,20 +117,49 @@ import {
           status: "ongoing",
           collaborators: "",
           startDate: "",
-        //   endDate: "",
         });
+  
+        // Log the email list to console when a project is added
+        console.log("Emails to notify:", subscribedEmails);
+
+        subscribedEmails.forEach((email) => {
+            console.log(`Sending email to: ${email}`);
+            console.log(`Email content:`);
+            console.log(`
+              Subject: New Research Project Added
+              Dear Subscriber,
+      
+              A new research project titled "${added.title}" has been added.
+      
+              Project Details:
+              Title: ${added.title}
+              Description: ${added.description}
+              Status: ${added.status}
+              Collaborators: ${added.collaborators.join(", ")}
+              Start Date: ${new Date(added.startDate).toLocaleDateString()}
+      
+              You can find more details here: http://localhost:3001/projects
+      
+              Best Regards,
+              Research Team
+            `);
+          });
       } catch (err) {
         alert("Error adding project: " + err.message);
       }
     };
   
+    const handleSubscribe = (email) => {
+      setSubscribedEmails((prev) => [...prev, email]);
+      alert("You have successfully subscribed for notifications.");
+    };
+  
     const handleDeleteProject = async (id) => {
-
-        if (userPosition !== "admin") {
-            alert("You do not have permission to delete this project.");
-            return;
-        }
-
+      if (userPosition !== "admin") {
+        alert("You do not have permission to delete this project.");
+        return;
+      }
+  
       if (!window.confirm("Are you sure you want to delete this project?"))
         return;
   
@@ -159,14 +186,29 @@ import {
         {error && <Typography color="error">{error}</Typography>}
   
         {userPosition === "admin" && (
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => setOpenModal(true)}
-            sx={{ marginBottom: 2 }}
-          >
-            Add Project
-          </Button>
+          <Box sx={{ display: "flex", gap: 2 }}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => setOpenModal(true)}
+              sx={{ marginBottom: 2 }}
+            >
+              Add Project
+            </Button>
+  
+            {/* Subscribe Button */}
+            <Button
+              variant="outlined"
+              color="secondary"
+              onClick={() => {
+                const email = prompt("Enter your email to subscribe:");
+                if (email) handleSubscribe(email);
+              }}
+              sx={{ marginBottom: 2 }}
+            >
+              Subscribe
+            </Button>
+          </Box>
         )}
   
         <Modal open={openModal} onClose={() => setOpenModal(false)}>
@@ -194,7 +236,6 @@ import {
               "description",
               "status",
               "startDate",
-            //   "endDate",
             ].map((field) => (
               <TextField
                 key={field}
@@ -206,7 +247,7 @@ import {
                 rows={field === "description" ? 2 : 1}
                 value={newProject[field]}
                 onChange={handleInputChange}
-                type={field === "startDate"  ? "date" : "text"}  //|| field === "endDate"
+                type={field === "startDate" ? "date" : "text"}
               />
             ))}
   
@@ -218,27 +259,26 @@ import {
               value={newProject.collaborators}
               onChange={handleInputChange}
             />
-
-        <FormControl fullWidth margin="normal">
-        <InputLabel id="faculty-select-label">Faculty</InputLabel>
-        <Select
-            labelId="faculty-select-label"
-            name="facultyId"
-            value={newProject.facultyId || ""}
-            onChange={handleInputChange}
-            label="Faculty"
-        >
-            <MenuItem value="">
-            <em>None</em>
-            </MenuItem>
-            {facultyList.map((faculty) => (
-            <MenuItem key={faculty._id} value={faculty._id}>
-                {faculty.name}
-            </MenuItem>
-            ))}
-        </Select>
-        </FormControl>
-
+  
+            <FormControl fullWidth margin="normal">
+              <InputLabel id="faculty-select-label">Faculty</InputLabel>
+              <Select
+                labelId="faculty-select-label"
+                name="facultyId"
+                value={newProject.facultyId || ""}
+                onChange={handleInputChange}
+                label="Faculty"
+              >
+                <MenuItem value="">
+                  <em>None</em>
+                </MenuItem>
+                {facultyList.map((faculty) => (
+                  <MenuItem key={faculty._id} value={faculty._id}>
+                    {faculty.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
   
             <Box sx={{ textAlign: "right", mt: 2 }}>
               <Button onClick={() => setOpenModal(false)} sx={{ mr: 1 }}>
@@ -268,10 +308,7 @@ import {
                   position: "relative",
                 }}
               >
-                <Box
-                  onClick={() => handleCardClick(p._id)}
-                  sx={{ width: "100%", height: "100%" }}
-                >
+                <Box onClick={() => handleCardClick(p._id)} sx={{ width: "100%", height: "100%" }}>
                   <CardContent>
                     <Typography variant="h6">{p.title}</Typography>
                     <Typography variant="body2" color="text.secondary">
@@ -281,65 +318,43 @@ import {
                       Status: {p.status}
                     </Typography>
                     {p.startDate && (
-                    <Typography variant="caption" color="text.secondary" display="block">
-                    Start Date: {new Date(p.startDate).toLocaleDateString()}
-                    </Typography>
+                      <Typography variant="caption" color="text.secondary" display="block">
+                        Start Date: {new Date(p.startDate).toLocaleDateString()}
+                      </Typography>
                     )}
                     <Typography variant="body2" color="text.secondary">
                       Faculty: {p.faculty.name}
                     </Typography>
                     {p.collaborators?.length > 0 && (
-                    <Typography variant="body2" color="text.secondary" display="block">
-                    Collaborators: {p.collaborators.join(", ")}
-                    </Typography>
+                      <Typography variant="body2" color="text.secondary" display="block">
+                        Collaborators: {p.collaborators.join(", ")}
+                      </Typography>
                     )}
-
+  
                     {userPosition === "admin" && (
-                    <Button
+                      <Button
                         variant="outlined"
                         color="error"
                         size="small"
                         sx={{
-                        position: "absolute",
-                        top: 8,
-                        right: 10,
-                        minWidth: "auto",
-                        padding: "2px 6px",
-                        borderRadius: "50%",
-                        minHeight: "auto",
+                          position: "absolute",
+                          top: 8,
+                          right: 10,
+                          minWidth: "auto",
+                          padding: "2px 6px",
+                          borderRadius: "50%",
+                          minHeight: "auto",
                         }}
                         onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeleteProject(p._id);
+                          e.stopPropagation();
+                          handleDeleteProject(p._id);
                         }}
-                    >
+                      >
                         <DeleteIcon fontSize="small" />
-                    </Button>
+                      </Button>
                     )}
-
                   </CardContent>
                 </Box>
-  
-                {/* {userPosition === "admin" && (
-                  <Button
-                    variant="outlined"
-                    color="error"
-                    size="small"
-                    sx={{
-                      position: "absolute",
-                      top: 8,
-                      right: 8,
-                      minWidth: "auto",
-                      padding: "2px 6px",
-                    }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDeleteProject(p._id);
-                    }}
-                  >
-                    X
-                  </Button>
-                )} */}
               </Card>
             </Grid>
           ))}

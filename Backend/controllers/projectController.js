@@ -1,4 +1,5 @@
 const Project = require("../models/researchProjectModel");
+const Faculty = require("../models/facultyModel");
 
 const getAllProjects = async (req, res) => {
     try {
@@ -21,40 +22,54 @@ const getProjectsByFacultyId = async (req, res) => {
     return res.status(500).json({ msg: "Failed to fetch projects" });
   }
 };
+
 const addProject = async (req, res) => {
-    const {
-      facultyId,
-      title,
-      description,
-      status,
-      collaborators = [],
-      startDate,
-    } = req.body;
-  
-    if (!facultyId || !title || !description) {
-      return res.status(400).json({ msg: "Missing required fields" });
-    }
-  
     try {
-      const newProject = new Project({
-        faculty: facultyId, 
+  
+      const {
         title,
         description,
-        status: status || "ongoing",
+        status,
+        startDate,
+        collaborators,
+        facultyId,
+        facultyName
+      } = req.body;
+  
+      let resolvedFacultyId = facultyId;
+  
+      if (!facultyId && facultyName) {
+        const faculty = await Faculty.findOne({ name: facultyName });
+        if (!faculty) {
+          console.error("Faculty not found:", facultyName);
+          return res.status(400).json({ error: "Faculty not found by name" });
+        }
+        resolvedFacultyId = faculty._id;
+      }
+  
+      if (!resolvedFacultyId) {
+        console.error("Missing facultyId");
+        return res.status(400).json({ error: "Faculty ID is required" });
+      }
+  
+      const newProject = new Project({
+        title,
+        description,
+        status,
+        faculty: resolvedFacultyId,
         collaborators,
         startDate,
       });
   
       const savedProject = await newProject.save();
-  
-      await savedProject.populate("faculty");
-  
-      return res.status(201).json(savedProject);
-    } catch (error) {
-      console.error("Error adding project:", error);
-      return res.status(500).json({ msg: "Failed to add project" });
+      const populated = await savedProject.populate("faculty");
+      res.status(201).json(populated);
+    } catch (err) {
+      console.error("Error in addProject:", err);
+      res.status(500).json({ error: "Failed to add project" });
     }
   };
+  
   
 
 const updateProject = async (req, res) => {
