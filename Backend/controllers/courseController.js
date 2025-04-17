@@ -1,3 +1,5 @@
+const mongoose = require("mongoose");
+
 const Course = require("../models/courseModel");
 
 const getAllCourses = async (req, res) => {
@@ -12,9 +14,8 @@ const getAllCourses = async (req, res) => {
 
 const getCourseById = async (req, res) => {
   const { id } = req.params;
-
   try {
-    const course = await Course.findById(id);
+    const course = await Course.findById(id).populate("faculty");
     if (!course) {
       return res.status(404).json({ msg: "Course not found" });
     }
@@ -26,25 +27,40 @@ const getCourseById = async (req, res) => {
 };
 
 const addCourse = async (req, res) => {
-  const { title, department, facultyId, syllabus } = req.body;
+  const { code, name, description, faculty, resources } = req.body;
 
-  if (!title || !department || !facultyId) {
+  if (!code || !name) {
     return res.status(400).json({ msg: "Missing required fields" });
   }
 
+  // Validate faculty IDs
+  if (faculty && !faculty.every((id) => mongoose.Types.ObjectId.isValid(id))) {
+    return res.status(400).json({ msg: "Invalid faculty ID(s) provided" });
+  }
+
   try {
+    // Convert string IDs to ObjectIds
+    const facultyIds = faculty
+      ? faculty.map((id) => new mongoose.Types.ObjectId(id))
+      : [];
+
     const newCourse = new Course({
-      title,
-      department,
-      facultyId,
-      syllabus,
+      code,
+      name,
+      faculty: facultyIds,
+      resources: resources || [],
+      description: description || "",
     });
 
     const savedCourse = await newCourse.save();
-    return res.status(201).json({ msg: "Course added successfully", savedCourse });
+    return res
+      .status(201)
+      .json({ msg: "Course added successfully", savedCourse });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ msg: "Failed to add course" });
+    console.error("Error adding course:", error);
+    return res
+      .status(500)
+      .json({ msg: "Failed to add course", error: error.message });
   }
 };
 
@@ -53,11 +69,15 @@ const updateCourse = async (req, res) => {
   const updateData = req.body;
 
   try {
-    const updatedCourse = await Course.findByIdAndUpdate(id, updateData, { new: true });
+    const updatedCourse = await Course.findByIdAndUpdate(id, updateData, {
+      new: true,
+    });
     if (!updatedCourse) {
       return res.status(404).json({ msg: "Course not found" });
     }
-    return res.status(200).json({ msg: "Course updated successfully", updatedCourse });
+    return res
+      .status(200)
+      .json({ msg: "Course updated successfully", updatedCourse });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ msg: "Failed to update course" });

@@ -19,9 +19,8 @@ const sections = [
     id: "academics",
     title: "Academic Resources",
     items: [
-      { label: "Faculty Reviews", path: "/faculty-reviews" },
-      { label: "Course Listing", path: "/courses" },
-      { label: "Course Reviews", path: "/course-reviews" },
+      { label: "Faculty Reviews", path: "/faculty" },
+      { label: "Course Listing and reviews", path: "/courses" },
       { label: "Previous Papers", path: "/previous-papers" },
     ],
   },

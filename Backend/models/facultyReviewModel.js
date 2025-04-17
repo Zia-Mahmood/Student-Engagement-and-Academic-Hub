@@ -1,9 +1,9 @@
 const mongoose = require("mongoose");
 
-const courseReviewSchema = new mongoose.Schema({
-  course: {
+const facultyReviewSchema = new mongoose.Schema({
+  Faculty: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Course",
+    ref: "Faculty",
     required: true,
   },
   reviewer: {
@@ -11,9 +11,8 @@ const courseReviewSchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
-  rating: { type: Number, min: 1, max: 5 },
   comment: { type: String },
   date: { type: Date, default: Date.now },
 });
 
-module.exports = mongoose.model("CourseReview", courseReviewSchema);
+module.exports = mongoose.model("FacultyReview", facultyReviewSchema);

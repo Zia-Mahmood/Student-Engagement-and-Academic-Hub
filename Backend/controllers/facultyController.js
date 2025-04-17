@@ -25,33 +25,49 @@ const getFacultyById = async (req, res) => {
 };
 
 const getResearchFaculty = async (req, res) => {
-    try {
-      const researchFaculty = await Faculty.find({ isResearchActive: true });
-      return res.status(200).json(researchFaculty);
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({ msg: "Failed to fetch research-active faculty" });
-    }
-  };
+  try {
+    const researchFaculty = await Faculty.find({ isResearchActive: true });
+    return res.status(200).json(researchFaculty);
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ msg: "Failed to fetch research-active faculty" });
+  }
+};
 
 const addFaculty = async (req, res) => {
-  const { name, department, researchInterests, isResearchActive, profileImage } = req.body;
+  const {
+    name,
+    email,
+    department,
+    bio,
+    officeHours,
+    researchInterests,
+    isResearchActive,
+    interests,
+  } = req.body;
 
-  if (!name || !department) {
+  if (!name || !email) {
     return res.status(400).json({ msg: "Missing required fields" });
   }
 
   try {
     const newFaculty = new Faculty({
       name,
+      email,
       department,
+      bio,
+      officeHours,
       researchInterests,
       isResearchActive,
-      profileImage
+      interests,
     });
-    
+
     const savedFaculty = await newFaculty.save();
-    return res.status(201).json({ msg: "Faculty added successfully", savedFaculty });
+    return res
+      .status(201)
+      .json({ msg: "Faculty added successfully", savedFaculty });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ msg: "Failed to add faculty" });
@@ -63,11 +79,15 @@ const updateFaculty = async (req, res) => {
   const updateData = req.body;
 
   try {
-    const updatedFaculty = await Faculty.findByIdAndUpdate(id, updateData, { new: true });
+    const updatedFaculty = await Faculty.findByIdAndUpdate(id, updateData, {
+      new: true,
+    });
     if (!updatedFaculty) {
       return res.status(404).json({ msg: "Faculty not found" });
     }
-    return res.status(200).json({ msg: "Faculty updated successfully", updatedFaculty });
+    return res
+      .status(200)
+      .json({ msg: "Faculty updated successfully", updatedFaculty });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ msg: "Failed to update faculty" });
