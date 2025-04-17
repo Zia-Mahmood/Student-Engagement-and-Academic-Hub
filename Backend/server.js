@@ -12,6 +12,7 @@ const eventRoutes = require("./routes/eventRoutes");
 const courseRoutes = require("./routes/courseRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
 const facultyRoutes = require("./routes/facultyRoutes");
+const projectRoutes = require("./routes/projectRoutes");
 
 const {
   refreshSession,
@@ -82,6 +83,7 @@ app.use("/api/images", express.static("images"));
 app.use("/api/courses", courseRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/faculty", facultyRoutes);
+app.use("/api/projects", projectRoutes);
 
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);

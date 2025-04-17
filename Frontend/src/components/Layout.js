@@ -70,6 +70,10 @@ const Layout = ({ onLogout }) => {
     navigate("/faculty");
   };
 
+  const goToResearchProjects = () => {
+    navigate("/projects");
+  };
+
   return (
     <Box
       sx={{
@@ -236,6 +240,22 @@ const Layout = ({ onLogout }) => {
                 <Groups2RoundedIcon />
               </ListItemIcon>
               <ListItemText primary="Faculty Profiles and Reviews" />
+            </ListItem>
+            <ListItem
+              button
+              sx={{
+                ":hover": { backgroundColor: "rgb(75, 72, 72)" },
+                width: "96%",
+                ml: "5px",
+                mr: "5px",
+                borderRadius: "5px",
+              }}
+              onClick={() => goToResearchProjects()}
+            >
+              <ListItemIcon sx={{ color: "#b3b3cc" }}>
+                <Groups2RoundedIcon />
+              </ListItemIcon>
+              <ListItemText primary="Research Projects" />
             </ListItem>
           </List>
         </Box>
