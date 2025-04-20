@@ -7,7 +7,7 @@ def generate_overview_with_gemini(
     candidates: List[Dict],
     model: str = "gemini-2.0-flash-lite"
 ) -> str:
-    api_key = os.getenv("AIzaSyBKYVDS_-Z8wv2a_X9_6koKEBNlgV_95ks")
+    api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
         raise EnvironmentError("GEMINI_API_KEY not set in environment")
     context_parts = []
