@@ -1,0 +1,16 @@
+# Python artifacts
+__pycache__/
+*.py[cod]
+*.sqlite3
+*.log
+
+# Virtual env (if any)
+venv/
+.env
+se-project3
+
+# Whoosh index
+whoosh_index/
+
+# FAISS indexes (if saved)
+*.index
