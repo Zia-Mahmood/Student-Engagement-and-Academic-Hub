@@ -1,6 +1,7 @@
 const express = require("express");
 const {
-  getProjectsByFaculty,
+  getAllProjects,
+  getProjectsByFacultyId,
   addProject,
   updateProject,
   deleteProject,
@@ -9,7 +10,8 @@ const {
 const router = express.Router();
 
 // Project routes
-router.get("/faculty/:facultyId", getProjectsByFaculty);        
+router.get("/all", getAllProjects);
+router.get("/faculty/:facultyId", getProjectsByFacultyId);        
 router.post("/add", addProject);                                
 router.put("/update/:id", updateProject);                       
 router.delete("/delete/:id", deleteProject);                    

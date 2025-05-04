@@ -38,7 +38,7 @@ const login = async (req, res) => {
   if (!email || !password) {
     res.status(400).json({ msg: "Something missing" });
   }
-  console.log(lastLogin,Users);
+  console.log(lastLogin, Users);
 
   try {
     const user = await Users.findOne({ email: email }); // finding user in db
@@ -51,7 +51,6 @@ const login = async (req, res) => {
     const matchPassword = await bcrypt.compare(password, user.passwordHash);
     console.log(matchPassword);
 
-
     if (matchPassword) {
       // Update lastLogin
       await Users.updateOne({ email }, { lastLogin });
@@ -59,6 +58,7 @@ const login = async (req, res) => {
 
       // Creating user session to keep user logged in also on refresh
       const userSession = {
+        _id: user._id,
         email: user.email,
         position: user.position,
         name: user.name,
