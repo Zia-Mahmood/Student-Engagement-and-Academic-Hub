@@ -39,6 +39,7 @@ const getAllStudentBody = async (req,res) => {
 };
 
 const getClub = async (req,res) => {
+    console.log(req.params)
     try{
       const club = await Club.findOne({cid:req.params.clubId});
       if (!club){

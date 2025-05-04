@@ -291,7 +291,7 @@ const ClubDetail = ({ }) => {
                             <LocalActivityIcon sx={{ ml: "20px", color: "#ffffff", alignSelf: "center" }} fontSize='small' />
                             <Typography variant="h5" sx={{ ml: "10px", display: "block", whiteSpace: "pre-line", color: "#ffffff", width: "100%" }}>{"Events"}</Typography>
                         </Box>
-                        <Grid container spacing={2} alignItems="stretch">
+                        {events.length>0?<Grid container spacing={2} alignItems="stretch">
                             {events.map((event, index) => (
                                 <Grid
                                     item
@@ -301,7 +301,7 @@ const ClubDetail = ({ }) => {
                                     <EventCard event={event} />
                                 </Grid>
                             ))}
-                        </Grid>
+                        </Grid>:<Typography variant="h6" sx={{ ml: "30px", display: "block", whiteSpace: "initial", color: "#ffffff", width: "90%" }}>{"No Events Found"}</Typography>}
                     </Box>
 
                     <Divider sx={{ borderRadius: 1, borderStyle: "dotted", mt: "20px", backgroundColor: "#ffffff" }} />
@@ -311,7 +311,7 @@ const ClubDetail = ({ }) => {
                             <Groups2Icon sx={{ ml: "20px", color: "#ffffff", alignSelf: "center" }} fontSize='medium' />
                             <Typography variant="h5" sx={{ ml: "10px", display: "block", whiteSpace: "pre-line", color: "#ffffff", width: "100%" }}>{"Members"}</Typography>
                         </Box>
-                        <Grid container spacing={2} alignItems="stretch" sx={{mt:"20px", ml:"20px"}}>
+                        {members.length>0?<Grid container spacing={2} alignItems="stretch" sx={{mt:"20px", ml:"20px"}}>
                             {members.map((user, index) => (
                                 <Grid
                                     item
@@ -322,7 +322,7 @@ const ClubDetail = ({ }) => {
                                     <UserCard user={user} />
                                 </Grid>
                             ))}
-                        </Grid>
+                        </Grid>:<Typography variant="h6" sx={{ ml: "30px", display: "block", whiteSpace: "initial", color: "#ffffff", width: "90%" }}>{"No Members Found"}</Typography>}
                     </Box>
                 </Box>
 
